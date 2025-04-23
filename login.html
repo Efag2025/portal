@@ -222,7 +222,55 @@ if (recuperarForm) {
     setTimeout(() => fecharModalEsqueciSenha(e), 3000);
   });
 }
-
 </script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+  apiKey: "AIzaSyCdiDZNB963EFy6QWl5M-szV199SvQ5r4I",
+  authDomain: "painel-alunos-25f68.firebaseapp.com",
+  projectId: "painel-alunos-25f68",
+  storageBucket: "painel-alunos-25f68.firebasestorage.app",
+  messagingSenderId: "733465490272",
+  appId: "1:733465490272:web:6170d1d78ab955b8cd6405"
+};
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Reescreve o evento de envio do formulário
+  document.getElementById("cadastroForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const nome = document.getElementById("cadNome").value.trim();
+    const email = document.getElementById("cadEmail").value.trim();
+    const usuario = document.getElementById("cadUsuario").value.trim();
+    const senha = document.getElementById("cadSenha").value.trim();
+    const pelotao = document.getElementById("cadPelotao").value.trim();
+
+    if (!nome || !email || !usuario || !senha || !pelotao) return;
+
+    try {
+      await setDoc(doc(db, "usuariosPendentes", usuario), {
+        nome,
+        email,
+        usuario,
+        senha,
+        pelotao,
+        status: "pendente",
+        criadoEm: new Date()
+      });
+
+      document.getElementById("cadastroBtn").textContent = "Enviado ✔️";
+      document.getElementById("cadastroBtn").disabled = true;
+      document.getElementById("cadastroSuccess").style.display = "block";
+    } catch (err) {
+      alert("Erro ao enviar cadastro.");
+      console.error(err);
+    }
+  });
+</script>
+
 </body>
 </html>
